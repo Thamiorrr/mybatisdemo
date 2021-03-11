@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace为命名空间，功能是对sql语句进行分类管理，隔离sql语句 -->
+<mapper namespace="PersonTest">
+    <select id="findPersonByUsername" parameterType="java.lang.String"
+            resultType="com.bh.pojo.Person">
+        select * from persion where username like '%${value}%'
+    </select>
+    <select id="findPersonById" parameterType="java.lang.String"
+            resultType="com.bh.pojo.Person">
+        --          select * from user where userid = '%${value}%'
+        select * from persion where userid = #{id}
+
+    </select>
+    <insert id="insertPerson" parameterType="com.bh.pojo.Person">
+        <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+            select uuid()
+        </selectKey>
+        insert into persion(id,username,sex,address) values(#{id},#{username},#{sex},#{address})
+    </insert>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace为命名空间，功能是对sql语句进行分类管理，隔离sql语句 -->
+<mapper namespace="com.bh.mapper.UserMapper">
+    <select id="findUserByUsername" parameterType="java.lang.String"
+            resultType="com.bh.pojo.User">
+        select * from user where username like '%${value}%'
+    </select>
+    <select id="findUserById" parameterType="java.lang.String"
+            resultMap="userListResultMap">
+        --          select * from user where userid = '%${value}%'
+        select * from user where id = #{id}
+
+    </select>
+    <insert id="insertUser" parameterType="com.bh.pojo.User">
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into user (username,birthday,sex,address) values(#{username},#{birthday},#{sex},#{address})
+    </insert>
+    <delete id="deleteUserById" parameterType="int">
+        delete from user where id=#{id}
+    </delete>
+    <select id="findUserByUser" parameterType="com.bh.pojo.User" resultType="com.bh.pojo.User">
+        select * from user where id = #{id} and username like '%${username}%'
+    </select>
+<!--    <select id="findUserList" parameterType="com.bh.pojo.UserQueryVo" resultType="com.bh.pojo.User">-->
+<!--    select * from user where username=#{user.username} and sex=#{user.sex}-->
+<!--    </select>-->
+    <select id="findUserList" parameterType="com.bh.pojo.UserQueryVo" resultType="com.bh.pojo.User">
+    select * from user
+        <where>
+            <if test="user!=null">
+                <if test="user.sex!=null and user.sex!=''">
+                    and user.sex=#{user.sex}
+                </if>
+                <if test="user.username!=null and user.username!=''">
+                    and user.username like '%${user.username}%'
+                </if>
+            </if>
+        </where>
+    </select>
+    <!--输出简单类型-->
+    <select id="findUserCount" parameterType="com.bh.pojo.User" resultType="int">
+     select count(1) from user
+     </select>
+    <select id="findUserByHashMap" parameterType="java.util.Map" resultType="com.bh.pojo.User">
+    select * from user where id=#{id} and username like '%${username}%'
+    </select>
+    <select id="findUserInList" parameterType="com.bh.pojo.UserQueryVo" resultType="com.bh.pojo.User">
+    select * from user
+        <where>
+            <if test="ids!=null and ids.size>0">
+              <foreach collection="ids" open=" and id in(" close=")" item="id" separator="," >
+                   #{id}
+              </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="findUserByArray" parameterType="java.lang.Object" resultType="com.bh.pojo.User">
+        select * from user
+        <include refid="query_where"></include>
+    </select>
+    <sql id="query_where">
+        <where>
+            <if test="array!=null">
+                <foreach collection="array" item="item" index="index" open="and id in(" separator="," close=")">
+                    #{item.id}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+    <resultMap id="userListResultMap" type="com.bh.pojo.User">
+        <id column="idtest" property="id"/>
+        <id column="name" property="username"/>
+    </resultMap>
+</mapper>
+

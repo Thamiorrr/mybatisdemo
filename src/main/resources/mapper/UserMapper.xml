@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace为命名空间，功能是对sql语句进行分类管理，隔离sql语句 -->
+<mapper namespace="UserTest">
+    <select id="findUserByUsername" parameterType="java.lang.String"
+            resultType="com.bh.pojo.User">
+            select * from user where username like '%${value}%'
+    </select>
+    <select id="findUserById" parameterType="java.lang.String"
+            resultType="com.bh.pojo.User">
+--          select * from user where userid = '%${value}%'
+            select * from user where id = #{id}
+
+    </select>
+    <insert id="insertUser" parameterType="com.bh.pojo.User">
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into user (username,birthday,sex,address) values(#{username},#{birthday},#{sex},#{address})
+    </insert>
+    <delete id="deleteUserById" parameterType="int">
+    delete from user where id=#{id}
+    </delete>
+    <select id="selectUserByUser" parameterType="User" resultType="User">
+        select * from user where id = #{id} and username like '%${username}%'
+    </select>
+</mapper>
